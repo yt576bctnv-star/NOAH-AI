@@ -89,3 +89,29 @@ const NOAH = {
 function getNoahIdentity() {
     return NOAH;
 }
+
+async function sendToNoah(message) {
+    try {
+        const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: message
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Error al comunicarse con Noah");
+        }
+
+        return data.reply;
+
+    } catch (error) {
+        console.error("NOAH ERROR:", error);
+        return "Lo siento, Clark. No pude conectarme con mi sistema de inteligencia.";
+    }
+}
