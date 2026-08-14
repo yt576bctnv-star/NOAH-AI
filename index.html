@@ -190,42 +190,17 @@
     </div>
 
 <script src="noah-core.js"></script>
+<script src="noah-core.js"></script>
 
 <script>
     // Inicializar Noah
     const noah = getNoahIdentity();
 
-    // Personalizar la interfaz con la identidad de Noah
+    // Personalizar la interfaz
     document.getElementById("response").textContent =
         `Esperando a ${noah.user.preferred_name}...`;
 
     function talkToNoah() {
-
-    const input = document.getElementById("message");
-    const response = document.getElementById("response");
-
-    const message = input.value.trim();
-
-    if (message === "") {
-        response.textContent = "Estoy escuchando, Clark.";
-        return;
-    }
-
-    const identity = getNoahIdentity();
-
-    if (
-        message.toLowerCase().includes("quién eres") ||
-        message.toLowerCase().includes("quien eres")
-    ) {
-        response.textContent =
-            `Soy ${identity.identity.name}, tu asistente personal. Estoy aquí para ayudarte, ${identity.user.preferred_name}.`;
-    } else {
-        response.textContent =
-            `Recibido, ${identity.user.preferred_name}. Noah Core está funcionando.`;
-    }
-
-    input.value = "";
-}
 
         const input = document.getElementById("message");
         const response = document.getElementById("response");
@@ -233,12 +208,23 @@
         const message = input.value.trim();
 
         if (message === "") {
-            response.textContent = `Estoy escuchando, ${noah.user.preferred_name}.`;
+            response.textContent =
+                `Estoy escuchando, ${noah.user.preferred_name}.`;
             return;
         }
 
-        response.textContent =
-            `Recibido, ${noah.user.preferred_name}. Estoy procesando tu mensaje.`;
+        const lowerMessage = message.toLowerCase();
+
+        if (
+            lowerMessage.includes("quién eres") ||
+            lowerMessage.includes("quien eres")
+        ) {
+            response.textContent =
+                `Soy ${noah.identity.name}, tu asistente personal. Estoy aquí para ayudarte, ${noah.user.preferred_name}.`;
+        } else {
+            response.textContent =
+                `Recibido, ${noah.user.preferred_name}. Noah Core está funcionando.`;
+        }
 
         input.value = "";
     }
