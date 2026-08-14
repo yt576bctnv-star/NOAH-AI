@@ -189,23 +189,34 @@
 
     </div>
 
-    <script>
-        function talkToNoah() {
+<script src="noah-core.js"></script>
 
-            const input = document.getElementById("message");
-            const response = document.getElementById("response");
+<script>
+    // Inicializar Noah
+    const noah = getNoahIdentity();
 
-            const message = input.value.trim();
+    // Personalizar la interfaz con la identidad de Noah
+    document.getElementById("response").textContent =
+        `Esperando a ${noah.user.preferred_name}...`;
 
-            if (message === "") {
-                response.textContent = "Estoy escuchando, Clark.";
-                return;
-            }
+    function talkToNoah() {
 
-            response.textContent = "Recibido, Clark. Aún estoy aprendiendo a responder.";
-            input.value = "";
+        const input = document.getElementById("message");
+        const response = document.getElementById("response");
+
+        const message = input.value.trim();
+
+        if (message === "") {
+            response.textContent = `Estoy escuchando, ${noah.user.preferred_name}.`;
+            return;
         }
-    </script>
+
+        response.textContent =
+            `Recibido, ${noah.user.preferred_name}. Estoy procesando tu mensaje.`;
+
+        input.value = "";
+    }
+</script>
 
 </body>
 </html>
