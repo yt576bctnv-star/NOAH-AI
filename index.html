@@ -201,6 +201,32 @@
 
     function talkToNoah() {
 
+    const input = document.getElementById("message");
+    const response = document.getElementById("response");
+
+    const message = input.value.trim();
+
+    if (message === "") {
+        response.textContent = "Estoy escuchando, Clark.";
+        return;
+    }
+
+    const identity = getNoahIdentity();
+
+    if (
+        message.toLowerCase().includes("quién eres") ||
+        message.toLowerCase().includes("quien eres")
+    ) {
+        response.textContent =
+            `Soy ${identity.identity.name}, tu asistente personal. Estoy aquí para ayudarte, ${identity.user.preferred_name}.`;
+    } else {
+        response.textContent =
+            `Recibido, ${identity.user.preferred_name}. Noah Core está funcionando.`;
+    }
+
+    input.value = "";
+}
+
         const input = document.getElementById("message");
         const response = document.getElementById("response");
 
