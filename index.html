@@ -191,6 +191,7 @@
 
 <script src="noah-core.js"></script>
     <script src="noah-memory.js"></script>
+    <script src="noah-conversatio.js"></script>
 <script>
     // Inicializar Noah
     const noah = getNoahIdentity();
@@ -212,7 +213,12 @@
         return;
     }
 
+    // Guardar lo que dice Clark
+    addUserMessage(message);
+
     const lowerMessage = message.toLowerCase();
+
+    let noahResponse = "";
 
     // RECORDAR
     if (
@@ -220,27 +226,23 @@
         lowerMessage.startsWith("noah recuerda")
     ) {
 
-        let memoryText = message
+        const memoryText = message
             .replace(/^noah,?\s*recuerda\s*/i, "")
             .trim();
 
         if (memoryText === "") {
-            response.textContent =
+            noahResponse =
                 "Claro, Clark. ¿Qué quieres que recuerde?";
-            return;
+        } else {
+            remember(memoryText);
+
+            noahResponse =
+                `Entendido, Clark. Lo recordaré: "${memoryText}"`;
         }
-
-        remember(memoryText);
-
-        response.textContent =
-            `Entendido, Clark. Lo recordaré: "${memoryText}"`;
-
-        input.value = "";
-        return;
     }
 
     // MOSTRAR MEMORIA
-    if (
+    else if (
         lowerMessage.includes("qué recuerdas") ||
         lowerMessage.includes("que recuerdas") ||
         lowerMessage.includes("qué recuerdas de mí") ||
@@ -250,8 +252,10 @@
         const memories = getAllMemories();
 
         if (memories.length === 0) {
-            response.textContent =
+
+            noahResponse =
                 "Todavía no tengo recuerdos guardados, Clark.";
+
         } else {
 
             const memoryList = memories
@@ -260,48 +264,59 @@
                 )
                 .join(" | ");
 
-            response.textContent =
+            noahResponse =
                 `Esto es lo que recuerdo: ${memoryList}`;
         }
-
-        input.value = "";
-        return;
     }
 
-    // BORRAR TODA LA MEMORIA
-    if (
+    // BORRAR MEMORIA
+    else if (
         lowerMessage.includes("olvida todo") ||
         lowerMessage.includes("borra toda tu memoria")
     ) {
 
         clearMemory();
 
-        response.textContent =
+        noahResponse =
             "Memoria eliminada, Clark.";
+    }
 
-        input.value = "";
-        return;
+    // BORRAR CONVERSACIÓN
+    else if (
+        lowerMessage.includes("borra nuestra conversación") ||
+        lowerMessage.includes("olvida nuestra conversación")
+    ) {
+
+        clearConversation();
+
+        noahResponse =
+            "He eliminado nuestro historial de conversación, Clark.";
     }
 
     // IDENTIDAD
-    if (
+    else if (
         lowerMessage.includes("quién eres") ||
         lowerMessage.includes("quien eres")
     ) {
 
-        response.textContent =
+        noahResponse =
             `Soy ${noah.identity.name}, tu asistente personal. Estoy aquí para ayudarte, ${noah.user.preferred_name}.`;
-
-        input.value = "";
-        return;
     }
 
     // RESPUESTA GENERAL
-    response.textContent =
-        `Recibido, ${noah.user.preferred_name}. Noah Core está funcionando.`;
+    else {
+
+        noahResponse =
+            `Recibido, ${noah.user.preferred_name}. Noah Core está funcionando.`;
+    }
+
+    // Guardar la respuesta de Noah
+    addNoahMessage(noahResponse);
+
+    // Mostrar respuesta
+    response.textContent = noahResponse;
 
     input.value = "";
 }
-</script>
 
 </html>
