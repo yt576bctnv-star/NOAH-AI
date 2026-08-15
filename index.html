@@ -190,6 +190,7 @@
     </div>
 
 <script src="noah-core.js"></script>
+    <script src="noah-memory.js"></script>
 <script>
     // Inicializar Noah
     const noah = getNoahIdentity();
@@ -198,46 +199,109 @@
     document.getElementById("response").textContent =
         `Esperando a ${noah.user.preferred_name}...`;
 
-    async function talkToNoah() {
+   function talkToNoah() {
 
-        const input = document.getElementById("message");
-        const response = document.getElementById("response");
+    const input = document.getElementById("message");
+    const response = document.getElementById("response");
 
-        const message = input.value.trim();
+    const message = input.value.trim();
 
-        if (message === "") {
+    if (message === "") {
+        response.textContent =
+            `Estoy escuchando, ${noah.user.preferred_name}.`;
+        return;
+    }
+
+    const lowerMessage = message.toLowerCase();
+
+    // RECORDAR
+    if (
+        lowerMessage.startsWith("noah, recuerda") ||
+        lowerMessage.startsWith("noah recuerda")
+    ) {
+
+        let memoryText = message
+            .replace(/^noah,?\s*recuerda\s*/i, "")
+            .trim();
+
+        if (memoryText === "") {
             response.textContent =
-                `Estoy escuchando, ${noah.user.preferred_name}.`;
+                "Claro, Clark. ¿Qué quieres que recuerde?";
             return;
         }
 
-        response.textContent = "Noah está pensando...";
+        remember(memoryText);
 
-        input.disabled = true;
+        response.textContent =
+            `Entendido, Clark. Lo recordaré: "${memoryText}"`;
 
-        try {
-            const reply = await sendToNoah(message);
+        input.value = "";
+        return;
+    }
 
-            response.textContent = reply;
+    // MOSTRAR MEMORIA
+    if (
+        lowerMessage.includes("qué recuerdas") ||
+        lowerMessage.includes("que recuerdas") ||
+        lowerMessage.includes("qué recuerdas de mí") ||
+        lowerMessage.includes("que recuerdas de mi")
+    ) {
 
-        } catch (error) {
-            console.error("Error:", error);
+        const memories = getAllMemories();
+
+        if (memories.length === 0) {
+            response.textContent =
+                "Todavía no tengo recuerdos guardados, Clark.";
+        } else {
+
+            const memoryList = memories
+                .map((memory, index) =>
+                    `${index + 1}. ${memory.text}`
+                )
+                .join(" | ");
 
             response.textContent =
-                "Lo siento, Clark. No pude procesar tu mensaje.";
+                `Esto es lo que recuerdo: ${memoryList}`;
         }
 
         input.value = "";
-        input.disabled = false;
-        input.focus();
+        return;
     }
 
-    // Permitir enviar el mensaje presionando Enter
-    document.getElementById("message").addEventListener("keydown", function(event) {
-        if (event.key === "Enter") {
-            talkToNoah();
-        }
-    });
+    // BORRAR TODA LA MEMORIA
+    if (
+        lowerMessage.includes("olvida todo") ||
+        lowerMessage.includes("borra toda tu memoria")
+    ) {
+
+        clearMemory();
+
+        response.textContent =
+            "Memoria eliminada, Clark.";
+
+        input.value = "";
+        return;
+    }
+
+    // IDENTIDAD
+    if (
+        lowerMessage.includes("quién eres") ||
+        lowerMessage.includes("quien eres")
+    ) {
+
+        response.textContent =
+            `Soy ${noah.identity.name}, tu asistente personal. Estoy aquí para ayudarte, ${noah.user.preferred_name}.`;
+
+        input.value = "";
+        return;
+    }
+
+    // RESPUESTA GENERAL
+    response.textContent =
+        `Recibido, ${noah.user.preferred_name}. Noah Core está funcionando.`;
+
+    input.value = "";
+}
 </script>
 
 </html>
